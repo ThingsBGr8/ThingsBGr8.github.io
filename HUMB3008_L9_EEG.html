@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUMB3008 — Clinical Neurophysiology: Lecture 9</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/theme/white.min.css">
+
+  <style>
+    :root {
+      --accent:   #1a56db;
+      --accent2:  #0e3fa3;
+      --bg:       #0f1117;
+      --surface:  #1c2030;
+      --text:     #e8ecf4;
+      --muted:    #8892a4;
+      --radius:   10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    /* ── Top bar ─────────────────────────────────────────── */
+    #topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 20px;
+    }
+
+    #lecture-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 15px;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #voice-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    #voice-selector {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .voice-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .voice-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .voice-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── Audio controls ──────────────────────────────────── */
+    #audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #play-pause {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    #play-pause:hover { background: var(--accent2); }
+
+    #progress-wrap {
+      width: 160px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    #progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+
+    #time-display {
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      min-width: 60px;
+    }
+
+    #speed-selector {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .speed-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .speed-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .speed-btn.active {
+      background: rgba(26,86,219,0.25);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    /* ── Reveal container ────────────────────────────────── */
+    .reveal-viewport {
+      margin-top: 56px !important;
+      height: calc(100vh - 56px) !important;
+    }
+
+    .reveal {
+      height: calc(100vh - 56px) !important;
+    }
+
+    .reveal .slides section {
+      padding: 0 !important;
+    }
+
+    .reveal .slides section img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ── Slide counter ───────────────────────────────────── */
+    .reveal .slide-number {
+      background: rgba(0,0,0,0.5) !important;
+      color: rgba(255,255,255,0.6) !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 12px !important;
+      padding: 4px 10px !important;
+      border-radius: 4px !important;
+      bottom: 10px !important;
+      right: 10px !important;
+    }
+
+    /* ── Welcome overlay ─────────────────────────────────── */
+    #welcome {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(15,17,23,0.96);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #welcome-box {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 48px 52px;
+      max-width: 560px;
+      width: 90%;
+      text-align: center;
+    }
+
+    #welcome-box h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    #welcome-box p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    #welcome-box .label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    #welcome-voices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .welcome-voice-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 22px;
+      border-radius: 24px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .welcome-voice-btn:hover {
+      border-color: var(--accent);
+      background: rgba(26,86,219,0.15);
+    }
+
+    .welcome-voice-btn.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    #start-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 13px 36px;
+      border-radius: 28px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    #start-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+    #start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  
+
+
+
+
+/* ── Interactive Question Slides ─────────────────────────── */
+.iq-slide {
+  display: flex !important;
+  flex-direction: column;
+  padding: 0 !important;
+  height: 100%;
+  background: #1a1d27 !important;
+  font-family: 'DM Sans', sans-serif;
+  color: #e8ecf4;
+}
+.iq-hdr {
+  background: #1B4332;
+  padding: 13px 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.iq-bdg {
+  font-family: 'DM Sans', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #C9972B;
+  border: 1px solid rgba(201,151,43,.45);
+  border-radius: 4px;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+.iq-sub  { font-size: 14px; color: #aab; }
+.iq-gold { height: 5px; background: #C9972B; flex-shrink: 0; }
+.iq-body {
+  padding: 18px 36px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+.iq-stem {
+  font-size: 18px;
+  line-height: 1.55;
+  color: #f0f2f8;
+  background: rgba(255,255,255,.05);
+  border-left: 5px solid #C9972B;
+  padding: 13px 17px;
+  border-radius: 0 8px 8px 0;
+}
+.iq-inst {
+  font-size: 11px;
+  color: #778;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.iq-opts { display: flex; flex-direction: column; gap: 8px; }
+
+/* MCQ buttons */
+.iq-ob {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 16px; color: #e8ecf4;
+  text-align: left;
+  transition: all .15s; width: 100%;
+}
+.iq-ob:hover:not(:disabled) {
+  border-color: #C9972B;
+  background: rgba(201,151,43,.1);
+}
+.iq-ob:disabled { cursor: default; }
+.iq-ob.correct  { border-color: #6FCF97; background: rgba(111,207,151,.15); }
+.iq-ob.wrong    { border-color: #F28B82; background: rgba(242,139,130,.15); }
+.iq-ob.revealed { border-color: #6FCF97; background: rgba(111,207,151,.07); opacity: .7; }
+
+/* Multi-select */
+.iq-mo {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 9px;
+  cursor: pointer; font-size: 16px; color: #e8ecf4;
+  transition: all .15s; user-select: none;
+}
+.iq-mo:hover:not(.iq-locked) { border-color: #C9972B; background: rgba(201,151,43,.1); }
+.iq-mo.iq-sel    { border-color: #4a7c5e; background: rgba(27,67,50,.35); }
+.iq-mo.iq-cp     { border-color: #6FCF97; background: rgba(111,207,151,.15); }
+.iq-mo.iq-wp     { border-color: #F28B82; background: rgba(242,139,130,.15); }
+.iq-mo.iq-mp     { border-color: #6FCF97; background: rgba(111,207,151,.07); opacity: .7; }
+.iq-mo.iq-locked { cursor: default; }
+.iq-mchk {
+  width: 20px; height: 20px;
+  border: 1.5px solid rgba(255,255,255,.25);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; transition: all .15s; flex-shrink: 0;
+}
+.iq-mo.iq-sel .iq-mchk { background: #1B4332; border-color: #4a7c5e; color: #fff; }
+
+/* Sequence */
+.iq-seq  { display: flex; flex-direction: column; gap: 7px; }
+.iq-si {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,.05);
+  border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 9px;
+  cursor: grab; font-size: 16px; color: #e8ecf4;
+  user-select: none; transition: all .15s;
+}
+.iq-si:active      { cursor: grabbing; }
+.iq-si.iq-dragover { border-color: #C9972B; background: rgba(201,151,43,.1); }
+.iq-si.iq-cp       { border-color: #6FCF97; background: rgba(111,207,151,.15); cursor: default; }
+.iq-si.iq-wp       { border-color: #F28B82; background: rgba(242,139,130,.15); cursor: default; }
+.iq-sh { color: #667; flex-shrink: 0; font-size: 18px; }
+.iq-sn {
+  font-family: monospace; font-size: 12px; font-weight: 700;
+  color: #C9972B; background: rgba(201,151,43,.15);
+  border-radius: 4px; padding: 3px 8px; flex-shrink: 0;
+}
+.iq-ok {
+  font-family: monospace; font-size: 12px; font-weight: 700;
+  color: #C9972B; background: rgba(201,151,43,.15);
+  border-radius: 4px; padding: 3px 9px; flex-shrink: 0;
+}
+.iq-ot, .iq-st { flex: 1; font-size: 16px; text-align: left; }
+
+/* Buttons */
+.iq-sub {
+  padding: 9px 22px; background: #1B4332; color: #fff;
+  border: none; border-radius: 7px;
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer;
+  transition: all .2s; align-self: flex-start;
+}
+.iq-sub:hover    { background: #136C42; }
+.iq-sub:disabled { background: #445; cursor: default; }
+.iq-cont {
+  display: none; padding: 9px 24px; background: #C9972B; color: #fff;
+  border: none; border-radius: 7px;
+  font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  text-transform: uppercase; cursor: pointer;
+  transition: all .2s; align-self: flex-start;
+}
+.iq-cont.iq-show { display: block; }
+.iq-cont:hover   { background: #b08020; }
+
+/* Feedback */
+.iq-fb {
+  display: none; padding: 11px 16px; border-radius: 8px;
+  font-size: 15px; line-height: 1.6;
+  animation: iqfu .2s ease;
+}
+.iq-fb.iq-show { display: block; }
+.iq-fb.iq-ok   { background: rgba(111,207,151,.15); border: 1.5px solid #6FCF97; color: #6FCF97; }
+.iq-fb.iq-err  { background: rgba(242,139,130,.15); border: 1.5px solid #F28B82; color: #F28B82; }
+@keyframes iqfu { from { opacity:0; transform:translateY(4px) } to { opacity:1; transform:translateY(0) } }
+
+/* Progress dots */
+#iq-prog {
+  display: inline-flex; gap: 6px; align-items: center;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.iq-dot {
+  display: inline-block;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #445; transition: background .3s; flex-shrink: 0;
+}
+.iq-dot.iq-c { background: #6FCF97; }
+.iq-dot.iq-w { background: #F28B82; }
+
+</style>
+</head>
+<body></div>
+
+<!-- ── Welcome overlay ─────────────────────────────────────── -->
+<div id="welcome">
+  <div id="welcome-box">
+    <h1>HUMB3008 — Clinical Neurophysiology: Lecture 9</h1>
+    <p>This lecture plays automatically with narration.<br>
+       Choose your preferred narrator voice to begin.</p>
+    <div class="label">Select narrator</div>
+    <div id="welcome-voices">
+      <button class="welcome-voice-btn selected" data-voice="Saheli" onclick="selectWelcomeVoice(this)">Saheli</button>
+      <button class="welcome-voice-btn" data-voice="Darren" onclick="selectWelcomeVoice(this)">Darren</button>
+      <button class="welcome-voice-btn" data-voice="Tulipe" onclick="selectWelcomeVoice(this)">Tulipe</button>
+      <button class="welcome-voice-btn" data-voice="Paul" onclick="selectWelcomeVoice(this)">Paul</button>
+    </div>
+    <button id="start-btn" onclick="startPresentation()">Start Lecture ▶</button>
+  </div>
+</div>
+
+<!-- ── Top bar ─────────────────────────────────────────────── -->
+<div id="topbar">
+  <div id="lecture-title">HUMB3008 — Clinical Neurophysiology: Lecture 9</div>
+  <div id="iq-prog"><span style="color:#888;font-size:10px;font-family:monospace;margin-right:4px">Q:</span><span class="iq-dot" id="iq-dot-1"></span><span class="iq-dot" id="iq-dot-2"></span><span class="iq-dot" id="iq-dot-3"></span><span class="iq-dot" id="iq-dot-4"></span><span class="iq-dot" id="iq-dot-5"></span><span class="iq-dot" id="iq-dot-6"></span><span class="iq-dot" id="iq-dot-7"></span><span class="iq-dot" id="iq-dot-8"></span><span class="iq-dot" id="iq-dot-9"></span></div>
+  <div id="audio-controls">
+    <button id="play-pause" onclick="togglePlayPause()" title="Play / Pause">▶</button>
+    <div id="progress-wrap" onclick="seekAudio(event)" title="Click to seek">
+      <div id="progress-bar"></div>
+    </div>
+    <span id="time-display">0:00 / 0:00</span>
+  </div>
+  <div id="speed-selector">
+    <button class="speed-btn active" onclick="setSpeed(1.0)" data-speed="1.0">1×</button>
+    <button class="speed-btn" onclick="setSpeed(1.25)" data-speed="1.25">1.25×</button>
+    <button class="speed-btn" onclick="setSpeed(1.5)" data-speed="1.5">1.5×</button>
+    <button class="speed-btn" onclick="setSpeed(2.0)" data-speed="2.0">2×</button>
+  </div>
+  <div id="voice-label">Narrator:</div>
+  <div id="voice-selector">
+    <button class="voice-btn active" onclick="switchVoice('Saheli')" data-voice="Saheli">Saheli</button><button class="voice-btn" onclick="switchVoice('Darren')" data-voice="Darren">Darren</button><button class="voice-btn" onclick="switchVoice('Tulipe')" data-voice="Tulipe">Tulipe</button><button class="voice-btn" onclick="switchVoice('Paul')" data-voice="Paul">Paul</button>
+  </div>
+</div>
+
+<!-- ── Reveal presentation ─────────────────────────────────── -->
+<div class="reveal">
+  <div class="slides">
+            <section data-slide="1">
+              <img src="slides/slide_001.png" alt="Slide 1" loading="lazy">
+            </section>
+            <section data-slide="2">
+              <img src="slides/slide_002.png" alt="Slide 2" loading="lazy">
+            </section>
+            <section data-slide="3">
+              <img src="slides/slide_003.png" alt="Slide 3" loading="lazy">
+            </section>
+            <section data-slide="4">
+              <img src="slides/slide_004.png" alt="Slide 4" loading="lazy">
+            </section>
+            <section data-slide="5">
+              <img src="slides/slide_005.png" alt="Slide 5" loading="lazy">
+            </section>
+            <section data-slide="6">
+              <img src="slides/slide_006.png" alt="Slide 6" loading="lazy">
+            </section>
+            <section data-slide="7">
+              <img src="slides/slide_007.png" alt="Slide 7" loading="lazy">
+            </section>
+            <section data-slide="8">
+              <img src="slides/slide_008.png" alt="Slide 8" loading="lazy">
+            </section>
+            <section data-slide="9">
+              <img src="slides/slide_009.png" alt="Slide 9" loading="lazy">
+            </section>
+            <section data-slide="10">
+              <img src="slides/slide_010.png" alt="Slide 10" loading="lazy">
+            </section>
+            <section data-slide="11">
+              <img src="slides/slide_011.png" alt="Slide 11" loading="lazy">
+            </section>
+            <section data-slide="12">
+              <img src="slides/slide_012.png" alt="Slide 12" loading="lazy">
+            </section>
+            <section data-slide="13">
+              <img src="slides/slide_013.png" alt="Slide 13" loading="lazy">
+            </section>
+            <section data-slide="14">
+              <img src="slides/slide_014.png" alt="Slide 14" loading="lazy">
+            </section>
+            <section data-slide="15">
+              <img src="slides/slide_015.png" alt="Slide 15" loading="lazy">
+            </section>
+<section data-slide-q="1" data-question="1" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 1 OF 9</span>
+    <span class="iq-sub">Section 3 · Ten-Twenty System · Sequence Ordering</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">Arrange the following steps in the correct order for locating and placing the Cz electrode using the 10-20 system:</div>
+    <p class="iq-inst">☰ Drag into correct order, then Submit:</p>
+    <div class="iq-seq" id="iq1-seq"><div class="iq-si" draggable="true" data-correct="1"><span class="iq-sh">⠿</span><span class="iq-sn">1</span><span class="iq-st">Identify the nasion and inion on the patient's head</span></div>
+<div class="iq-si" draggable="true" data-correct="2"><span class="iq-sh">⠿</span><span class="iq-sn">2</span><span class="iq-st">Measure the total nasion-to-inion (sagittal) distance</span></div>
+<div class="iq-si" draggable="true" data-correct="3"><span class="iq-sh">⠿</span><span class="iq-sn">3</span><span class="iq-st">Mark the 50% point along the sagittal line (tentative vertex)</span></div>
+<div class="iq-si" draggable="true" data-correct="4"><span class="iq-sh">⠿</span><span class="iq-sn">4</span><span class="iq-st">Measure the total LPA-to-RPA (coronal) distance</span></div>
+<div class="iq-si" draggable="true" data-correct="5"><span class="iq-sh">⠿</span><span class="iq-sn">5</span><span class="iq-st">Confirm the 50% coronal crossing matches the sagittal mark — this is Cz</span></div>
+</div>
+    <button class="iq-sub" id="iq1-sub"
+      data-corr="[1, 2, 3, 4, 5]"
+      data-fc="Correct. Cz is defined as the intersection of the 50% sagittal line (nasion → inion) and the 50% coronal line (LPA → RPA). Both axes must be measured independently before the crossing point can be confirmed as Cz." data-fw="Start with identifying the landmarks (nasion and inion), then measure the full sagittal axis and mark 50%. Then independently measure the coronal axis (LPA to RPA) and mark 50%. Cz is confirmed where these two 50% marks intersect."
+      onclick="iqSeqSubmit(1,this)">Submit Order</button>
+    <div class="iq-fb" id="iq1-fb"></div>
+    <button class="iq-cont" id="iq1-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="17">
+              <img src="slides/slide_017.png" alt="Slide 17" loading="lazy">
+            </section>
+            <section data-slide="18">
+              <img src="slides/slide_018.png" alt="Slide 18" loading="lazy">
+            </section>
+            <section data-slide="19">
+              <img src="slides/slide_019.png" alt="Slide 19" loading="lazy">
+            </section>
+<section data-slide-q="2" data-question="2" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 2 OF 9</span>
+    <span class="iq-sub">Section 4 · Montages · Phase Reversal Localisation</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">An EEG technologist notices a sharp wave with maximum amplitude at electrode P4. In a longitudinal bipolar (double banana) montage, where would you expect to see a phase reversal?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq2-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="Those channels are anterior to P4 — too far from the focus. Phase reversal only occurs at the electrode of maximum amplitude, where the same discharge changes sign between being Input 2 (in the channel above) and Input 1 (in the channel below)." onclick="iqMCQ(2,this)"><span class="iq-ok">A</span><span class="iq-ot">Between Fp2–F4 and F4–C4</span></button>
+<button class="iq-ob" data-key="B" data-correct="true" data-fb="Correct. In the longitudinal bipolar chain, P4 appears as Input 2 in C4–P4 and as Input 1 in P4–O2. The same discharge changes sign between these roles, producing opposite-polarity deflections — a phase reversal — at the electrode of maximum amplitude." onclick="iqMCQ(2,this)"><span class="iq-ok">B</span><span class="iq-ot">Between C4–P4 and P4–O2</span></button>
+<button class="iq-ob" data-key="C" data-correct="false" data-fb="P3 and O1 are in the left hemisphere chain. P4 is in the right hemisphere chain. No phase reversal would appear in the left chain for a right-sided source." onclick="iqMCQ(2,this)"><span class="iq-ok">C</span><span class="iq-ot">Between P3–O1 and O1 (end of left hemisphere chain)</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="Volume conduction does spread signals, but phase reversal specifically localises to the electrode of maximum amplitude. If P4 is the maximum, the reversal is at P4 — not T4." onclick="iqMCQ(2,this)"><span class="iq-ok">D</span><span class="iq-ot">At T4, because volume conduction spreads posterior activity to temporal regions first</span></button>
+</div>
+    <div class="iq-fb" id="iq2-fb"></div>
+    <button class="iq-cont" id="iq2-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="21">
+              <img src="slides/slide_021.png" alt="Slide 21" loading="lazy">
+            </section>
+            <section data-slide="22">
+              <img src="slides/slide_022.png" alt="Slide 22" loading="lazy">
+            </section>
+            <section data-slide="23">
+              <img src="slides/slide_023.png" alt="Slide 23" loading="lazy">
+            </section>
+<section data-slide-q="3" data-question="3" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 3 OF 9</span>
+    <span class="iq-sub">Section 5 · Frequency Spectrum · Alpha PDR</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">A 35-year-old patient has a routine EEG. The technologist observes a well-formed 10 Hz rhythm over the posterior head regions that disappears completely when the patient opens their eyes and returns when they close them. What is the most accurate interpretation?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq3-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="Alpha blocking — the disappearance on eye opening — is the Berger effect: the defining normal feature of the posterior dominant rhythm. A rhythm that fails to block would actually be more concerning. Disappearance confirms appropriate reactivity." onclick="iqMCQ(3,this)"><span class="iq-ok">A</span><span class="iq-ot">Abnormal — a 10 Hz rhythm that disappears with eye opening suggests an epileptiform discharge responding to light</span></button>
+<button class="iq-ob" data-key="B" data-correct="true" data-fb="Correct. A 9–11 Hz posterior rhythm that blocks with eye opening and returns on eye closure is a textbook posterior dominant rhythm. Its reactivity — disappearing with visual input — is precisely what defines it as normal." onclick="iqMCQ(3,this)"><span class="iq-ok">B</span><span class="iq-ot">Normal — this is the posterior dominant rhythm demonstrating appropriate reactivity (the Berger effect)</span></button>
+<button class="iq-ob" data-key="C" data-correct="false" data-fb="Mu rhythm is also alpha frequency (8–12 Hz) but is located centrally (C3/C4), not posteriorly. Crucially, mu blocks with contralateral hand movement — not eye opening. The posterior location and eye-opening reactivity here are characteristic of the PDR, not mu." onclick="iqMCQ(3,this)"><span class="iq-ok">C</span><span class="iq-ot">Mu rhythm — it is alpha frequency and can appear to block with visual input</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="Beta is &gt;13 Hz. A 10 Hz rhythm is squarely in the alpha range. Beta is also typically frontocentral and low amplitude, not posterior and well-formed." onclick="iqMCQ(3,this)"><span class="iq-ok">D</span><span class="iq-ot">Beta activity — normal frontally but abnormal if seen posteriorly and reactive</span></button>
+</div>
+    <div class="iq-fb" id="iq3-fb"></div>
+    <button class="iq-cont" id="iq3-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="25">
+              <img src="slides/slide_025.png" alt="Slide 25" loading="lazy">
+            </section>
+            <section data-slide="26">
+              <img src="slides/slide_026.png" alt="Slide 26" loading="lazy">
+            </section>
+            <section data-slide="27">
+              <img src="slides/slide_027.png" alt="Slide 27" loading="lazy">
+            </section>
+<section data-slide-q="4" data-question="4" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 4 OF 9</span>
+    <span class="iq-sub">Section 6 · Normal EEG by Age</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">A 7-year-old child has a routine EEG. The posterior dominant rhythm is 8 Hz, reactive to eye opening. During drowsiness, the technologist observes brief bursts of high-amplitude generalised slow activity that resolve as the child becomes fully awake. How should these findings be interpreted?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq4-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="Both findings are actually within normal limits for age. An 8 Hz PDR is appropriate for a 7-year-old — the PDR only reaches adult values of ~10 Hz by adolescence. The slow bursts in drowsiness are hypnagogic hypersynchrony, a normal developmental finding." onclick="iqMCQ(4,this)"><span class="iq-ok">A</span><span class="iq-ot">Both findings are abnormal — 8 Hz PDR is too slow and the slow-wave bursts suggest encephalopathy</span></button>
+<button class="iq-ob" data-key="B" data-correct="false" data-fb="An 8 Hz PDR is appropriate for a 7-year-old. The PDR matures progressively — expecting a 10 Hz rhythm at age 7 misunderstands the developmental trajectory." onclick="iqMCQ(4,this)"><span class="iq-ok">B</span><span class="iq-ot">The PDR is abnormally slow for age, but the slow bursts in drowsiness are normal hypnagogic hypersynchrony</span></button>
+<button class="iq-ob" data-key="C" data-correct="true" data-fb="Correct. At age 7, an 8 Hz PDR is within the expected normal range — the adult value of ~10 Hz is not reached until adolescence. The high-amplitude slow bursts during drowsiness are hypnagogic hypersynchrony: a completely normal and common finding in children, not a sign of encephalopathy." onclick="iqMCQ(4,this)"><span class="iq-ok">C</span><span class="iq-ot">Both findings are within normal limits for a 7-year-old child</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="A 10 Hz PDR is an adult value, not expected at age 7. The developmental trajectory of the PDR is: ~4 Hz at 4 months → ~7 Hz at 3 years → ~8 Hz at 5 years → ~10 Hz by adolescence." onclick="iqMCQ(4,this)"><span class="iq-ok">D</span><span class="iq-ot">Both findings are abnormal — a normal 7-year-old should have a 10 Hz PDR and no slow-wave bursts during drowsiness</span></button>
+</div>
+    <div class="iq-fb" id="iq4-fb"></div>
+    <button class="iq-cont" id="iq4-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="29">
+              <img src="slides/slide_029.png" alt="Slide 29" loading="lazy">
+            </section>
+            <section data-slide="30">
+              <img src="slides/slide_030.png" alt="Slide 30" loading="lazy">
+            </section>
+            <section data-slide="31">
+              <img src="slides/slide_031.png" alt="Slide 31" loading="lazy">
+            </section>
+<section data-slide-q="5" data-question="5" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 5 OF 9</span>
+    <span class="iq-sub">Section 7 · Artefact Recognition</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">During an EEG recording, you observe a sudden large-amplitude transient at electrode T5 only. All other channels — including T3, P3, O1, and the ECG channel — remain at normal background amplitude. The transient lasts ~0.3 seconds before T5 returns to baseline. What is the most likely explanation?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq5-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="A genuine focal seizure discharge from the left posterior temporal region would have a physiological field — it would appear in adjacent electrodes (T3, P3, O1) with decreasing amplitude. A single-electrode event with no field in any adjacent channel cannot be a cortical discharge." onclick="iqMCQ(5,this)"><span class="iq-ok">A</span><span class="iq-ot">A focal seizure discharge originating from the left posterior temporal cortex (T5 region)</span></button>
+<button class="iq-ob" data-key="B" data-correct="true" data-fb="Correct. An electrode pop is characterised by a sudden large-amplitude transient confined to a single electrode, with no spread to any adjacent channel. The defining feature is its complete isolation — genuine cortical activity always has a spatial field extending to neighbouring electrodes." onclick="iqMCQ(5,this)"><span class="iq-ok">B</span><span class="iq-ot">An electrode pop at T5 due to poor electrode contact or high impedance</span></button>
+<button class="iq-ob" data-key="C" data-correct="false" data-fb="Pulse artefacts are rhythmic and time-locked to the cardiac cycle — they recur with every heartbeat at the R-R interval. A single isolated transient that does not repeat rhythmically does not fit the pattern of pulse artefact." onclick="iqMCQ(5,this)"><span class="iq-ok">C</span><span class="iq-ot">A pulse artefact from a nearby blood vessel, time-locked to the cardiac cycle</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="Lateral eye movement artefacts appear as opposite-polarity deflections at F7 and F8 — the frontotemporal electrodes closest to the eyes. T5 is a left posterior temporal electrode far removed from the ocular dipole." onclick="iqMCQ(5,this)"><span class="iq-ok">D</span><span class="iq-ot">A lateral eye movement artefact affecting the left posterior temporal electrode</span></button>
+</div>
+    <div class="iq-fb" id="iq5-fb"></div>
+    <button class="iq-cont" id="iq5-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+<section data-slide-q="6" data-question="6" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 6 OF 9</span>
+    <span class="iq-sub">Section 7 · Artefact vs Epileptiform · Multi-Select</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">Which of the following features would suggest that a sharp-appearing waveform is an artefact rather than an epileptiform discharge? Select ALL that apply.</div>
+    <p class="iq-inst">Click to select, then Submit:</p>
+    <div class="iq-opts" id="iq6-opts"><div class="iq-mo" data-key="A" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">A</span><span class="iq-ot">It appears only at a single electrode with no amplitude in any adjacent channels</span></div>
+<div class="iq-mo" data-key="B" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">B</span><span class="iq-ot">Its timing precisely coincides with observed eye blinks by the patient</span></div>
+<div class="iq-mo" data-key="C" data-correct="false" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">C</span><span class="iq-ot">It has a steep ascending phase and a slower descending phase (asymmetric morphology)</span></div>
+<div class="iq-mo" data-key="D" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">D</span><span class="iq-ot">Its amplitude is identical across all recording electrodes simultaneously</span></div>
+<div class="iq-mo" data-key="E" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">E</span><span class="iq-ot">It disappears completely when the patient relaxes their jaw muscles</span></div>
+</div>
+    <button class="iq-sub" id="iq6-sub"
+      data-fc="Correct. Options A (single electrode, no field), B (time-locked to blinks), D (uniform across all channels), and E (disappears with jaw relaxation) are all features of artefact. Option C — asymmetric morphology with steep ascent and slower descent — is actually a characteristic feature of genuine epileptiform sharp waves and spikes, not artefact." data-fw="Options A, B, D, and E are features of artefact. Option C (asymmetric morphology: steep ascent, slow descent) is the opposite of what you want — this describes the morphology of genuine epileptiform sharp waves."
+      onclick="iqMultiSubmit(6,this)">Submit</button>
+    <div class="iq-fb" id="iq6-fb"></div>
+    <button class="iq-cont" id="iq6-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="34">
+              <img src="slides/slide_034.png" alt="Slide 34" loading="lazy">
+              </section>
+            <section data-slide="35">
+              <img src="slides/slide_035.png" alt="Slide 35" loading="lazy">
+            </section>
+            <section data-slide="36">
+              <img src="slides/slide_036.png" alt="Slide 36" loading="lazy">
+              </section>
+            <section data-slide="37">
+              <img src="slides/slide_037.png" alt="Slide 37" loading="lazy">
+            </section>
+            <section data-slide="38">
+              <img src="slides/slide_038.png" alt="Slide 38" loading="lazy">
+            </section>
+<section data-slide-q="7" data-question="7" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 7 OF 9</span>
+    <span class="iq-sub">Section 8 · Normal Variants · Mu Rhythm</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">A 28-year-old patient's EEG shows arch-shaped 10 Hz waveforms over the central regions (C3/C4) during relaxed wakefulness. When asked to imagine squeezing their right hand, the waveforms disappear over C3. Eye opening and closing has no effect on this rhythm. What is this waveform?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq7-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="The central location (C3/C4) and the specific reactivity to hand movement rather than eye opening are the defining features of mu rhythm — a normal variant, not a pathologically displaced alpha rhythm. Posterior alpha blocks with eye opening; mu does not." onclick="iqMCQ(7,this)"><span class="iq-ok">A</span><span class="iq-ot">Abnormal alpha — pathological because it is central rather than posterior</span></button>
+<button class="iq-ob" data-key="B" data-correct="true" data-fb="Correct. Mu rhythm is an alpha-frequency (8–12 Hz) arch-shaped rhythm over the central regions (C3/C4/Cz) that blocks with contralateral hand movement or motor imagery. Crucially it does not block with eye opening — this distinguishes it from the posterior dominant rhythm. It is entirely benign, representing sensorimotor cortex idling." onclick="iqMCQ(7,this)"><span class="iq-ok">B</span><span class="iq-ot">Mu rhythm — a normal variant that blocks with contralateral motor imagery, not eye opening</span></button>
+<button class="iq-ob" data-key="C" data-correct="false" data-fb="Sleep spindles are 12–14 Hz with a waxing-waning morphology lasting 0.5–2 seconds. They occur in N2 sleep, not relaxed wakefulness, and are not reactive to voluntary hand movement or motor imagery." onclick="iqMCQ(7,this)"><span class="iq-ok">C</span><span class="iq-ot">Sleep spindles — they occur in central regions and may be present during light relaxation</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="Reactivity to voluntary hand movement is the defining feature of the benign mu rhythm — it reflects normal suppression of sensorimotor cortex idling when motor circuits become active. This is not an indicator of a cortical irritative focus." onclick="iqMCQ(7,this)"><span class="iq-ok">D</span><span class="iq-ot">Central epileptiform discharges — the motor reactivity indicates a cortical irritative focus</span></button>
+</div>
+    <div class="iq-fb" id="iq7-fb"></div>
+    <button class="iq-cont" id="iq7-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+<section data-slide-q="8" data-question="8" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 8 OF 9</span>
+    <span class="iq-sub">Section 8 · Normal Variants vs Epileptiform · Multi-Select</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">Which of the following features support classifying a waveform as a benign normal variant rather than an epileptiform discharge? Select ALL that apply.</div>
+    <p class="iq-inst">Click to select, then Submit:</p>
+    <div class="iq-opts" id="iq8-opts"><div class="iq-mo" data-key="A" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">A</span><span class="iq-ot">The waveform appears exclusively during a specific state (e.g., drowsiness) and is absent in full wakefulness</span></div>
+<div class="iq-mo" data-key="B" data-correct="false" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">B</span><span class="iq-ot">Each discharge is followed by a prominent slow wave</span></div>
+<div class="iq-mo" data-key="C" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">C</span><span class="iq-ot">The waveform blocks with a specific physiological manoeuvre (e.g., hand movement, active visual scanning)</span></div>
+<div class="iq-mo" data-key="D" data-correct="true" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">D</span><span class="iq-ot">It occurs in runs with consistent morphology and frequency, with no evolution over time</span></div>
+<div class="iq-mo" data-key="E" data-correct="false" onclick="iqToggle(this)"><div class="iq-mchk"></div><span class="iq-ok">E</span><span class="iq-ot">It is confined to a single electrode with no field in adjacent channels</span></div>
+</div>
+    <button class="iq-sub" id="iq8-sub"
+      data-fc="Correct. Options A (state-dependency), C (blocks with physiological manoeuvre), and D (consistent morphology without evolution) are all features of benign variants like mu rhythm, lambda waves, and RMTD. Option B (after-slow-wave) is characteristic of genuine epileptiform discharges — not benign variants. Option E (single electrode, no field) suggests artefact, not a benign variant." data-fw="Options A, C, and D are the correct features of benign variants. Option B (after-slow-wave) is actually a feature of epileptiform discharges — the absence of an after-slow-wave is one of the key features that helps identify variants as benign. Option E (no field) suggests artefact rather than a true variant."
+      onclick="iqMultiSubmit(8,this)">Submit</button>
+    <div class="iq-fb" id="iq8-fb"></div>
+    <button class="iq-cont" id="iq8-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="41">
+              <img src="slides/slide_041.png" alt="Slide 41" loading="lazy">
+            </section>
+            <section data-slide="42">
+              <img src="slides/slide_042.png" alt="Slide 42" loading="lazy">
+            </section>
+<section data-slide-q="9" data-question="9" class="iq-slide">
+  <div class="iq-hdr">
+    <span class="iq-bdg">QUESTION 9 OF 9</span>
+    <span class="iq-sub">Section 9 · Quantitative EEG · ICU Monitoring</span>
+  </div>
+  <div class="iq-gold"></div>
+  <div class="iq-body">
+    <div class="iq-stem">A comatose patient in the ICU has continuous EEG monitoring. The qEEG trend display shows a sudden paroxysmal increase in high-frequency power accompanied by an abrupt change in the burst-suppression ratio. What does this pattern most likely indicate, and what should happen next?</div>
+    <p class="iq-inst">Select one answer:</p>
+    <div class="iq-opts" id="iq9-opts"><button class="iq-ob" data-key="A" data-correct="false" data-fb="Deeper sedation would produce the opposite pattern — increased burst-suppression ratio (more suppression) and decreased high-frequency power. A sudden paroxysmal increase in high-frequency power moves the EEG toward more activity, not less." onclick="iqMCQ(9,this)"><span class="iq-ok">A</span><span class="iq-ot">The patient has fallen into deeper sedation — no immediate action required</span></button>
+<button class="iq-ob" data-key="B" data-correct="false" data-fb="Recovery from sedation would show a gradual progressive return of background activity over time, not a sudden paroxysmal change in high-frequency power composition." onclick="iqMCQ(9,this)"><span class="iq-ok">B</span><span class="iq-ot">The patient is recovering from sedation and the EEG is normalising gradually</span></button>
+<button class="iq-ob" data-key="C" data-correct="true" data-fb="Correct. A sudden paroxysmal increase in high-frequency power combined with an abrupt change in burst-suppression ratio is a seizure alert pattern requiring immediate review of the raw EEG. Non-convulsive seizures occur in up to 20% of comatose patients and are only detectable by EEG. qEEG trends flag potential events but the raw EEG must always be reviewed to confirm." onclick="iqMCQ(9,this)"><span class="iq-ok">C</span><span class="iq-ot">A possible seizure event — requires immediate review of the raw EEG by a trained reader</span></button>
+<button class="iq-ob" data-key="D" data-correct="false" data-fb="Movement artefact during nursing care typically appears as broadband noise affecting all channels simultaneously with no change in the burst-suppression pattern. A sudden isolated paroxysmal change is more concerning and always requires raw EEG review before attributing to artefact." onclick="iqMCQ(9,this)"><span class="iq-ok">D</span><span class="iq-ot">A movement artefact from nursing care — this pattern is expected during patient repositioning</span></button>
+</div>
+    <div class="iq-fb" id="iq9-fb"></div>
+    <button class="iq-cont" id="iq9-cont" onclick="iqNext()">Continue →</button>
+  </div>
+</section>
+
+
+
+
+
+            <section data-slide="44">
+              <img src="slides/slide_044.png" alt="Slide 44" loading="lazy">
+            </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.js"></script>
+<script>
+// ── Data ──────────────────────────────────────────────────────
+const DURATIONS  = {"Saheli": {"1": 170.35, "2": 4.06, "3": 187.72, "4": 194.23, "5": 12.13, "6": 167.06, "7": 194.52, "8": 182.71, "9": 184.14, "10": 13.67, "11": 178.03, "12": 195.43, "13": 192.92, "14": 188.98, "15": 201.57, "16": 6.51, "17": 28.35, "18": 182.16, "19": 177.8, "20": 6.67, "21": 22.16, "22": 168.13, "23": 194.12, "24": 6.33, "25": 16.78, "26": 220.04, "27": 232.03, "28": 6.46, "29": 8.65, "30": 210.11, "31": 231.01, "32": 6.62, "33": 6.09, "34": 31.59, "35": 236.21, "36": 167.84, "37": 173.8, "38": 165.21, "39": 6.28, "40": 6.51, "41": 27.36, "42": 255.9, "43": 5.96, "44": 274.16}, "Darren": {"1": 168.37, "2": 3.82, "3": 181.98, "4": 184.75, "5": 10.98, "6": 157.68, "7": 188.48, "8": 175.6, "9": 180.38, "10": 13.56, "11": 176.49, "12": 184.93, "13": 183.47, "14": 179.42, "15": 187.31, "16": 5.21, "17": 28.59, "18": 168.44, "19": 171.11, "20": 5.02, "21": 21.38, "22": 166.04, "23": 182.34, "24": 4.94, "25": 19.0, "26": 209.69, "27": 223.17, "28": 5.49, "29": 7.27, "30": 208.02, "31": 225.76, "32": 6.04, "33": 5.31, "34": 30.39, "35": 232.78, "36": 173.33, "37": 172.31, "38": 162.57, "39": 5.86, "40": 5.31, "41": 26.52, "42": 248.69, "43": 5.31, "44": 271.86}, "Tulipe": {"1": 161.08, "2": 4.47, "3": 179.18, "4": 179.83, "5": 11.4, "6": 156.74, "7": 183.78, "8": 172.21, "9": 173.98, "10": 10.85, "11": 168.92, "12": 183.78, "13": 177.61, "14": 170.77, "15": 184.51, "16": 6.25, "17": 26.76, "18": 173.43, "19": 164.0, "20": 6.15, "21": 20.17, "22": 157.13, "23": 178.89, "24": 6.15, "25": 17.95, "26": 210.29, "27": 215.86, "28": 6.09, "29": 8.0, "30": 197.75, "31": 216.2, "32": 6.09, "33": 6.56, "34": 29.5, "35": 221.45, "36": 161.34, "37": 165.81, "38": 149.56, "39": 5.96, "40": 6.38, "41": 24.41, "42": 248.43, "43": 5.96, "44": 252.92}, "Paul": {"1": 144.02, "2": 3.74, "3": 158.41, "4": 161.73, "5": 9.8, "6": 139.61, "7": 169.75, "8": 157.97, "9": 161.08, "10": 10.64, "11": 157.68, "12": 164.08, "13": 162.7, "14": 158.23, "15": 172.55, "16": 5.31, "17": 23.94, "18": 155.49, "19": 157.68, "20": 5.78, "21": 18.92, "22": 145.38, "23": 159.54, "24": 5.6, "25": 16.23, "26": 190.0, "27": 198.51, "28": 5.96, "29": 6.67, "30": 189.4, "31": 196.97, "32": 5.62, "33": 5.49, "34": 25.66, "35": 208.67, "36": 146.03, "37": 155.54, "38": 141.02, "39": 5.68, "40": 5.41, "41": 23.0, "42": 225.16, "43": 6.15, "44": 239.24}};
+const VOICES     = ["Saheli", "Darren", "Tulipe", "Paul"];
+const SLIDE_COUNT = 44;
+
+let currentVoice = "Saheli";
+let currentSlide = 1;
+let isPlaying    = false;
+let started      = false;
+let currentSpeed = 1.0;
+
+const audio = new Audio();
+
+// ── Duration helpers ──────────────────────────────────────────
+function getDuration(voice, slide) {
+  return (DURATIONS[voice] && DURATIONS[voice][slide])
+    ? DURATIONS[voice][slide] : 30;
+}
+
+function getTotalDuration(voice) {
+  return Object.values(DURATIONS[voice] || {}).reduce((a, b) => a + b, 0);
+}
+
+// ── Audio loading ─────────────────────────────────────────────
+function loadAudio(slide, andPlay) {
+  audio.pause();
+  audio.src = `audio/${currentVoice}/slide_${slide}.mp3`;
+  audio.load();
+  audio.playbackRate = currentSpeed;
+  if (andPlay) {
+    audio.play().catch(() => {});
+    isPlaying = true;
+    updatePlayBtn();
+  }
+  Reveal.configure({ autoSlide: getDuration(currentVoice, slide) * 1000 / currentSpeed });
+}
+
+// ── Welcome overlay ───────────────────────────────────────────
+function selectWelcomeVoice(btn) {
+  document.querySelectorAll('.welcome-voice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentVoice = btn.dataset.voice;
+}
+
+function startPresentation() {
+  document.getElementById('welcome').style.display = 'none';
+  started = true;
+  // Sync topbar voice buttons
+  document.querySelectorAll('.voice-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.voice === currentVoice));
+  loadAudio(1, true);
+  Reveal.configure({ autoSlide: getDuration(currentVoice, 1) * 1000 });
+}
+
+// ── Voice switching ───────────────────────────────────────────
+function switchVoice(voice) {
+  currentVoice = voice;
+  document.querySelectorAll('.voice-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.voice === voice));
+  const wasPlaying = isPlaying;
+  loadAudio(currentSlide, wasPlaying);
+}
+
+// ── Playback speed ───────────────────────────────────────────
+function setSpeed(speed) {
+  currentSpeed = speed;
+  audio.playbackRate = speed;
+  document.querySelectorAll('.speed-btn').forEach(b =>
+    b.classList.toggle('active', parseFloat(b.dataset.speed) === speed));
+  // Recalculate remaining autoSlide time based on new speed
+  if (isPlaying && audio.duration) {
+    const remaining = (audio.duration - audio.currentTime) / speed * 1000;
+    Reveal.configure({ autoSlide: remaining });
+  }
+}
+
+// ── Play / pause ──────────────────────────────────────────────
+function togglePlayPause() {
+  if (!started) return;
+  if (audio.paused) {
+    audio.playbackRate = currentSpeed;
+    audio.play().catch(() => {});
+    Reveal.configure({ autoSlide: getDuration(currentVoice, currentSlide) * 1000 / currentSpeed });
+    isPlaying = true;
+  } else {
+    audio.pause();
+    Reveal.configure({ autoSlide: 0 });
+    isPlaying = false;
+  }
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  document.getElementById('play-pause').textContent = isPlaying ? '⏸' : '▶';
+}
+
+// ── Progress bar ──────────────────────────────────────────────
+function seekAudio(e) {
+  if (!audio.duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct  = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = pct * audio.duration;
+}
+
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+audio.addEventListener('timeupdate', () => {
+  const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('time-display').textContent =
+    `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
+});
+
+audio.addEventListener('ended', () => {
+  isPlaying = false;
+  updatePlayBtn();
+});
+
+// ── Reveal.js setup ───────────────────────────────────────────
+Reveal.initialize({
+  controls:             true,
+  progress:             true,
+  slideNumber:          'c/t',
+  autoSlide:            0,
+  autoSlideStoppable:   false,
+  transition:           'fade',
+  transitionSpeed:      'fast',
+  width:                1920,
+  height:               1080,
+  margin:               0,
+  disableLayout:        false,
+  hash:                 true,
+});
+
+Reveal.on('slidechanged', event => {
+  currentSlide = event.indexh + 1;
+  if (started) {
+    loadAudio(currentSlide, true);
+    isPlaying = true;
+    updatePlayBtn();
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ── Interactive Question Logic ────────────────────────────
+const IQ = {};  // tracks answered questions: {qnum: true/false}
+
+function iqDot(n, ok) {
+  const d = document.getElementById('iq-dot-' + n);
+  if (d) { d.classList.remove('iq-c','iq-w'); if (ok!=null) d.classList.add(ok?'iq-c':'iq-w'); }
+}
+
+function iqFB(n, ok, txt) {
+  const e = document.getElementById('iq' + n + '-fb');
+  if (!e) return;
+  e.className = 'iq-fb iq-show ' + (ok ? 'iq-ok' : 'iq-err');
+  e.innerHTML = '<strong>' + (ok ? '✓ Correct' : '✗ Incorrect') + '</strong> — ' + txt;
+}
+
+function iqShowCont(n) {
+  const b = document.getElementById('iq' + n + '-cont');
+  if (b) setTimeout(() => b.classList.add('iq-show'), 400);
+}
+
+function iqNext() {
+  Reveal.next();
+}
+
+// On every slide change: if it's a question slide, kill the auto-advance timer
+// Use setTimeout(0) so our configure() fires after build_reveal.py's slidechanged
+// handler has finished calling loadAudio() / Reveal.configure({ autoSlide: N })
+Reveal.on('slidechanged', event => {
+  const q = event.currentSlide && event.currentSlide.getAttribute('data-question');
+  if (q) {
+    setTimeout(() => {
+      Reveal.configure({ autoSlide: 0 });
+      if (typeof audio !== 'undefined') audio.pause();
+    }, 0);
+  }
+});
+
+// MCQ
+function iqMCQ(n, btn) {
+  const ok = btn.getAttribute('data-correct') === 'true';
+  const fb = btn.getAttribute('data-fb');
+  document.querySelectorAll('#iq' + n + '-opts .iq-ob').forEach(b => {
+    b.disabled = true;
+    if (b === btn) b.classList.add(ok ? 'correct' : 'wrong');
+    else if (!ok && b.getAttribute('data-correct') === 'true') b.classList.add('revealed');
+  });
+  iqFB(n, ok, fb); IQ[n] = ok; iqDot(n, ok); iqShowCont(n);
+}
+
+// Multi-select toggle
+function iqToggle(el) {
+  if (el.classList.contains('iq-locked')) return;
+  el.classList.toggle('iq-sel');
+  const c = el.querySelector('.iq-mchk');
+  if (c) c.textContent = el.classList.contains('iq-sel') ? '✓' : '';
+}
+
+// Multi-select submit
+function iqMultiSubmit(n, btn) {
+  const fc = btn.getAttribute('data-fc');
+  const fw = btn.getAttribute('data-fw');
+  const opts = document.querySelectorAll('#iq' + n + '-opts .iq-mo');
+  let ok = true;
+  opts.forEach(o => {
+    o.classList.add('iq-locked');
+    const cor = o.getAttribute('data-correct') === 'true';
+    const sel = o.classList.contains('iq-sel');
+    const c   = o.querySelector('.iq-mchk');
+    if (sel && cor)  { o.classList.add('iq-cp'); if(c) c.textContent='✓'; }
+    else if (sel && !cor) { o.classList.add('iq-wp'); if(c) c.textContent='✗'; ok=false; }
+    else if (!sel && cor) { o.classList.add('iq-mp'); if(c) c.textContent='○'; ok=false; }
+    else { if(c) c.textContent=''; }
+  });
+  btn.disabled = true;
+  iqFB(n, ok, ok ? fc : fw); IQ[n] = ok; iqDot(n, ok);
+  if (ok) {
+    iqShowCont(n);
+  } else {
+    setTimeout(() => {
+      opts.forEach(o => {
+        o.classList.remove('iq-locked','iq-cp','iq-wp','iq-mp','iq-sel');
+        const c = o.querySelector('.iq-mchk'); if(c) c.textContent='';
+      });
+      btn.disabled = false;
+      const f = document.getElementById('iq'+n+'-fb');
+      if(f){f.className='iq-fb';f.textContent='';}
+      delete IQ[n]; iqDot(n,null);
+    }, 4000);
+  }
+}
+
+// Sequence submit
+function iqSeqSubmit(n, btn) {
+  const corr = JSON.parse(btn.getAttribute('data-corr'));
+  const fc   = btn.getAttribute('data-fc');
+  const fw   = btn.getAttribute('data-fw');
+  const items = [...document.querySelectorAll('#iq'+n+'-seq .iq-si')];
+  let ok = true;
+  items.forEach((it, i) => {
+    const right = (i+1 === corr[i]);
+    it.classList.add(right ? 'iq-cp' : 'iq-wp');
+    it.setAttribute('draggable','false');
+    if (!right) ok = false;
+    const s = it.querySelector('.iq-sn'); if(s) s.textContent = i+1;
+  });
+  btn.disabled = true;
+  iqFB(n, ok, ok?fc:fw); IQ[n]=ok; iqDot(n,ok);
+  if (ok) {
+    iqShowCont(n);
+  } else {
+    setTimeout(() => {
+      items.forEach(i=>{i.classList.remove('iq-cp','iq-wp');i.setAttribute('draggable','true');});
+      btn.disabled=false;
+      const f=document.getElementById('iq'+n+'-fb');
+      if(f){f.className='iq-fb';f.textContent='';}
+      delete IQ[n]; iqDot(n,null);
+    }, 3500);
+  }
+}
+
+// Drag and drop for sequence questions
+(function(){
+  let src=null;
+  const oS=function(e){src=this;this.classList.add('iq-dragging');e.dataTransfer.effectAllowed='move';};
+  const oE=function(){this.classList.remove('iq-dragging');document.querySelectorAll('.iq-si').forEach(i=>i.classList.remove('iq-dragover'));};
+  const oO=function(e){e.preventDefault();this.classList.add('iq-dragover');return false;};
+  const oL=function(){this.classList.remove('iq-dragover');};
+  const oD=function(e){
+    e.stopPropagation();
+    if(src!==this){
+      const p=this.parentNode, its=[...p.querySelectorAll('.iq-si')];
+      if(its.indexOf(src)<its.indexOf(this)) p.insertBefore(src,this.nextSibling);
+      else p.insertBefore(src,this);
+      [...p.querySelectorAll('.iq-si')].forEach((it,i)=>{
+        const n=it.querySelector('.iq-sn'); if(n) n.textContent=i+1;
+      });
+    }
+    this.classList.remove('iq-dragover'); return false;
+  };
+  Reveal.on('ready',function(){
+    document.querySelectorAll('.iq-si').forEach(el=>{
+      el.addEventListener('dragstart',oS); el.addEventListener('dragend',oE);
+      el.addEventListener('dragover',oO); el.addEventListener('dragleave',oL);
+      el.addEventListener('drop',oD);
+    });
+  });
+})();
+
+</script>
+</body>
+</html>
